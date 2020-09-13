@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html>
+	
+	<head>
+		
+		<title>Roll Tanks</title>
+		
+		<meta name="language" content="en" />
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
+		<meta name="apple-mobile-web-app-capable" content="yes" /> 
+		<meta name="apple-mobile-web-app-status-bar-style" content="default" /> 
+		
+		<link rel="apple-touch-icon-precomposed" href="a/icon.png"/> 
+		
+		<script type="text/javascript" src="swipe_prompt.js"></script>
+		<script type="text/javascript" src="constants.js"></script>
+		<script type="text/javascript" src="collisions.js"></script>	
+		<script type="text/javascript" src="button.js"></script>
+		<script type="text/javascript" src="transition.js"></script>
+		<script type="text/javascript" src="shadow.js"></script>
+		<script type="text/javascript" src="pause_panel.js"></script>
+		<script type="text/javascript" src="touch_controls.js"></script>
+		<script type="text/javascript" src="hud.js"></script>
+		<script type="text/javascript" src="vector2d.js"></script>
+		<script type="text/javascript" src="scene_object.js"></script>
+		<script type="text/javascript" src="cloud.js"></script>
+		<script type="text/javascript" src="sky.js"></script>
+		<script type="text/javascript" src="health.js"></script>
+		<script type="text/javascript" src="clouds.js"></script>
+		<script type="text/javascript" src="dice.js"></script>
+		<script type="text/javascript" src="arc.js"></script>
+		<script type="text/javascript" src="shell.js"></script>
+		<script type="text/javascript" src="explosion.js"></script>
+		<script type="text/javascript" src="tank_turret.js"></script>
+		<script type="text/javascript" src="tank_gun.js"></script>
+		<script type="text/javascript" src="tank.js"></script>
+		<script type="text/javascript" src="tree.js"></script>
+		<script type="text/javascript" src="floor.js"></script>
+		<script type="text/javascript" src="game.js"></script>
+		<script type="text/javascript" src="core.js"></script>
+		
+		<style type="text/css">
+		
+			html, body { font-family: sans-serif; margin:0; width:100%; height:100%; overflow:hidden; background-color:#000; color: #fff;}
+			#game {	display:block; background-color:#000; margin-left:auto; margin-right:auto; outline:none;}
+
+			#rotate { position:absolute; top: 0; left:0; width: 100%; height: 100%; display: none;}
+			#sp { position: absolute; top: 0; left: 0; width: 100%; height: 999999px; z-index: 999999; background-color: #000; } 
+			.sp_text { text-align: center; position: absolute; top: 100px; left: 0; right: 0; font-size: 28px;}
+			.sp_disabled .sp_text { display: none; }
+			
+		</style>
+		
+	</head>
+	
+	<body>
+
+		<div style="display:none"><img id="img_shadow" width="100" height="100" src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20image-rendering%3D%22auto%22%20width%3D%22920%22%20height%3D%22560%22%3E%3Cpath%20d%3D%22M85%2085Q100%2071%20100%2050%20100%2029%2085%2015%2071%200%2050%200%2029%200%2015%2015%200%2029%200%2050%200%2071%2015%2085%2029%20100%2050%20100%2071%20100%2085%2085%22%20fill-opacity%3D%220.2%22%2F%3E%3C%2Fsvg%3E'></div>
+		<!--		
+		<div style="display:none"><img id="img_dice0" width="128" height="128" src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20image-rendering%3D%22auto%22%3E%3Cpath%20d%3D%22M128%20128L128%200%200%200%200%20128%20128%20128%22%20fill%3D%22%23F29AC0%22%2F%3E%3Cpath%20d%3D%22M94%2064Q94%2047%2086%2038%2078%2029%2064%2029%2057%2029%2052%2031%2046%2033%2043%2038%2035%2048%2035%2064%2035%2081%2043%2090%2050%20100%2064%20100%2078%20100%2086%2090%2094%2081%2094%2064M70%2064Q70%2071%2068%2075%2067%2078%2064%2078%2061%2078%2060%2075%2059%2071%2059%2064%2059%2057%2060%2053%2061%2050%2064%2050%2067%2050%2068%2053%2070%2057%2070%2064%22%20fill%3D%22%23333%22%2F%3E%3C%2Fsvg%3E'></div>
+		<div style="display:none"><img id="img_dice1" width="128" height="128" src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20image-rendering%3D%22auto%22%3E%3Cpath%20d%3D%22M0%200L0%20128%20128%20128%20128%200%200%200%22%20fill%3D%22%23FEDDB4%22%2F%3E%3Cpath%20d%3D%22M82%2098L82%2030%2047%2030%2047%2051%2057%2051%2057%2098%2082%2098%22%20fill%3D%22%23333%22%2F%3E%3C%2Fsvg%3E%0A'></div>
+		<div style="display:none"><img id="img_dice2" width="128" height="128" src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20image-rendering%3D%22auto%22%3E%3Cpath%20d%3D%22M128%200L0%200%200%20128%20128%20128%20128%200%22%20fill%3D%22%23EDEDA5%22%2F%3E%3Cpath%20d%3D%22M94%2096L94%2077%2077%2077Q94%2066%2094%2053%2094%2041%2086%2034%2079%2027%2066%2027%2040%2027%2038%2056L61%2056Q61%2052%2062%2050%2063%2048%2066%2048%2068%2048%2069%2049%2070%2050%2070%2052%2070%2055%2069%2057%2067%2058%2066%2060L35%2096%2094%2096%22%20fill%3D%22%23333%22%2F%3E%3C%2Fsvg%3E'></div>
+		<div style="display:none"><img id="img_dice3" width="128" height="128" src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20image-rendering%3D%22auto%22%3E%3Cpath%20d%3D%22M128%200L0%200%200%20128%20128%20128%20128%200%22%20fill%3D%22%23FEDDB4%22%2F%3E%3Cpath%20d%3D%22M90%2045Q89%2038%2084%2034%2077%2029%2065%2029%2052%2029%2046%2034%2039%2039%2038%2051L61%2051Q60%2050%2061%2048%2062%2047%2064%2047%2066%2047%2067%2048%2068%2049%2068%2051%2068%2053%2066%2054%2064%2056%2061%2055L61%2069%2062%2069Q66%2069%2067%2071%2069%2072%2069%2075%2069%2078%2068%2079%2066%2081%2064%2081%2062%2081%2060%2079%2059%2078%2059%2074L35%2074Q36%2087%2044%2094%2051%20100%2065%20100%2081%20100%2088%2091%2093%2086%2093%2078%2093%2072%2090%2068%2088%2063%2082%2062L81%2062Q85%2062%2088%2057%2090%2052%2090%2045%22%20fill%3D%22%23333%22%2F%3E%3C%2Fsvg%3E'></div>
+		<div style="display:none"><img id="img_dice4" width="128" height="128" src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20image-rendering%3D%22auto%22%3E%3Cpath%20d%3D%22M128%200L0%200%200%20128%20128%20128%20128%200%22%20fill%3D%22%23F29AC0%22%2F%3E%3Cpath%20d%3D%22M94%2085L94%2067%2087%2067%2087%2030%2060%2030%2034%2067%2034%2085%2063%2085%2063%2098%2087%2098%2087%2085%2094%2085M65%2067L55%2067Q61%2057%2063%2054%2063%2054%2066%2050%2065%2054%2065%2067%22%20fill%3D%22%23333%22%2F%3E%3C%2Fsvg%3E'></div>
+		-->
+		<div id="rotate"><p class="sp_text">ROTATE YOUR DEVICE</p></div>
+		<div id="holder" class="sp_disabled">
+			<canvas id="game" width="1680" height="720" tabindex="1"></canvas>
+			<div id="sp"><p class="sp_text">SWIPE UP TO PLAY</p></div>
+		</div>
+
+		<script>var swipePrompt = new SwipePrompt();</script>
+	</body>
+</html>
